@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML CAPTCHA - Verification Result</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="result-body">
+    <div class="cyber-background-grid"></div>
+
+    <div class="result-container">
+        <!-- Human Result -->
+        {% if result == "Human" %}
+        <div class="result-card card-human">
+            <div class="shield-container">
+                <i class="fa-solid fa-shield-halved result-shield shield-green"></i>
+                <i class="fa-solid fa-check check-overlay icon-green"></i>
+            </div>
+            
+            <div class="result-text-area">
+                <h1 class="orbit-glow-green">VERIFICATION PASSED</h1>
+                <p class="result-verdict">The Machine Learning model classified your behavior signature as: <strong class="badge-human">HUMAN</strong></p>
+                <div class="security-status-message text-green">
+                    <i class="fa-solid fa-lock-open"></i> System access clearance granted. Session initialized.
+                </div>
+            </div>
+        {% elif result == "Bot" %}
+        <!-- Bot Result -->
+        <div class="result-card card-bot">
+            <div class="shield-container">
+                <i class="fa-solid fa-shield-halved result-shield shield-red"></i>
+                <i class="fa-solid fa-xmark check-overlay icon-red"></i>
+            </div>
+            
+            <div class="result-text-area">
+                <h1 class="orbit-glow-red">VERIFICATION FAILED</h1>
+                <p class="result-verdict">The Machine Learning model classified your behavior signature as: <strong class="badge-bot">BOT / AUTOMATED THREAT</strong></p>
+                <div class="security-status-message text-red">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Security blockage triggered. Automated request blocked.
+                </div>
+            </div>
+        {% else %}
+        <!-- Error Result -->
+        <div class="result-card card-error">
+            <div class="shield-container">
+                <i class="fa-solid fa-triangle-exclamation result-shield shield-orange"></i>
+            </div>
+            
+            <div class="result-text-area">
+                <h1 class="orbit-glow-orange">SYSTEM ERROR</h1>
+                <p class="result-verdict">An error occurred during behavior pattern analysis.</p>
+                <p class="error-msg">{{ error }}</p>
+            </div>
+        {% endif %}
+
+            <!-- Telemetry Parameters Analyzed -->
+            <div class="telemetry-breakdown">
+                <h3><i class="fa-solid fa-chart-simple"></i> Telemetry Parameters Analyzed</h3>
+                <div class="breakdown-grid">
+                    <div class="breakdown-item">
+                        <span class="lbl-light">CAPTCHA Length</span>
+                        <strong class="val-light">{{ length }} characters</strong>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="lbl-light">Total Solve Time</span>
+                        <strong class="val-light">{{ "%.2f"|format(time) }} s</strong>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="lbl-light">Mouse Movement Events</span>
+                        <strong class="val-light">{{ mouse }} count</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back Button -->
+            <div class="result-actions">
+                <a href="/" class="btn btn-primary" id="btn-back">
+                    <i class="fa-solid fa-chevron-left"></i> BACK TO DASHBOARD
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
