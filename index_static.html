@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML CAPTCHA Shield - Static Demo</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Modern Dark Glassmorphic Design for ML-CAPTCHA */
+        :root {
+            --bg-dark: #0a0d14;
+            --bg-card: rgba(16, 22, 35, 0.65);
+            --border-color: rgba(0, 242, 254, 0.15);
+            --border-hover: rgba(0, 242, 254, 0.4);
+            
+            --neon-cyan: #00f2fe;
+            --neon-cyan-glow: rgba(0, 242, 254, 0.35);
+            --neon-green: #39ff14;
+            --neon-green-glow: rgba(57, 255, 20, 0.35);
+            --neon-red: #ff007f;
+            --neon-red-glow: rgba(255, 0, 127, 0.35);
+            --neon-orange: #ff7b00;
+            --neon-orange-glow: rgba(255, 123, 0, 0.35);
+
+            --text-primary: #f0f3f8;
+            --text-secondary: #8f9cae;
+            --text-muted: #576574;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Background Grid */
+        .cyber-background-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 242, 254, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 254, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .cyber-background-grid::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, transparent 20%, #06080c 95%);
+        }
+
+        /* Container */
+        .app-container {
+            max-width: 1300px;
+            width: 92%;
+            margin: 40px auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            flex-grow: 1;
+            transition: all 0.3s ease;
+        }
+
+        /* Header Area */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .security-icon-glow {
+            font-size: 2.2rem;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 15px var(--neon-cyan-glow);
+        }
+
+        .logo-text h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #ffffff, var(--neon-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sub-logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            color: var(--text-secondary);
+        }
+
+        .system-stats {
+            display: flex;
+            gap: 15px;
+        }
+
+        .stat-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 242, 254, 0.08);
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            padding: 8px 14px;
+            border-radius: 30px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.8rem;
+            color: var(--neon-cyan);
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .pulse-green {
+            background-color: var(--neon-green);
+            box-shadow: 0 0 8px var(--neon-green-glow);
+            animation: pulse 1.8s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.6; }
+            50% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 12px var(--neon-green); }
+            100% { transform: scale(0.9); opacity: 0.6; }
+        }
+
+        /* Dashboard Content Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card Styling */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
+            display: flex;
+            flex-direction: column;
+            transition: border-color 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .card-header h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: block;
+            margin-top: 4px;
+        }
+
+        .card-body {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Captcha Challenge Widget */
+        .captcha-display-container {
+            position: relative;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .captcha-noise-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(10, 13, 20, 0.8) 100%),
+                repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.05) 0px, rgba(255, 255, 255, 0.05) 1px, transparent 1px, transparent 10px),
+                repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.05) 0px, rgba(255, 255, 255, 0.05) 1px, transparent 1px, transparent 10px);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .captcha-text-display {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 12px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan-glow);
+            z-index: 2;
+            transform: rotate(-1deg) skewX(-10deg);
+        }
+
+        .refresh-captcha-btn {
+            position: absolute;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.1rem;
+            z-index: 3;
+            transition: color 0.2s, transform 0.3s;
+        }
+
+        .refresh-captcha-btn:hover {
+            color: var(--neon-cyan);
+            transform: rotate(180deg);
+        }
+
+        /* Mouse Tracking Area (Canvas Sandbox) */
+        .tracking-sandbox {
+            position: relative;
+            height: 160px;
+            background: rgba(10, 13, 20, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        #trail-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .sandbox-overlay-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            z-index: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .tracking-sandbox:hover .sandbox-overlay-text {
+            opacity: 0.3;
+        }
+
+        /* Inputs */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .input-group input {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 10px var(--neon-cyan-glow);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        /* Buttons */
+        .form-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: inherit;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--neon-cyan), #00a8ff);
+            color: #05050a;
+            border: none;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 15px var(--neon-cyan-glow);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--text-secondary);
+        }
+
+        .btn-accent {
+            background: transparent;
+            color: var(--neon-cyan);
+            border: 1px solid var(--neon-cyan);
+        }
+
+        .btn-accent:hover {
+            background: rgba(0, 242, 254, 0.08);
+            box-shadow: 0 0 10px var(--neon-cyan-glow);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+        }
+
+        /* Telemetry Dials/Bars */
+        .telemetry-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .telemetry-meter {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 15px 18px;
+            border-radius: 10px;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            grid-template-rows: auto auto;
+            align-items: center;
+            column-gap: 15px;
+            row-gap: 8px;
+        }
+
+        .meter-icon {
+            grid-row: span 2;
+            font-size: 1.5rem;
+            color: var(--neon-cyan);
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 242, 254, 0.05);
+            border: 1px solid rgba(0, 242, 254, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 0 8px var(--neon-cyan-glow);
+        }
+
+        #meter-mouse .meter-icon {
+            color: var(--neon-green);
+            background: rgba(57, 255, 20, 0.05);
+            border-color: rgba(57, 255, 20, 0.1);
+            text-shadow: 0 0 8px var(--neon-green-glow);
+        }
+
+        #meter-time .meter-icon {
+            color: var(--neon-orange);
+            background: rgba(255, 123, 0, 0.05);
+            border-color: rgba(255, 123, 0, 0.1);
+            text-shadow: 0 0 8px var(--neon-orange-glow);
+        }
+
+        .meter-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .meter-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .meter-value {
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .meter-bar-container {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            grid-column: 2 / span 1;
+            overflow: hidden;
+        }
+
+        .meter-bar {
+            height: 100%;
+            border-radius: 3px;
+            background: var(--neon-cyan);
+            box-shadow: 0 0 5px var(--neon-cyan-glow);
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #meter-mouse .meter-bar {
+            background: var(--neon-green);
+            box-shadow: 0 0 5px var(--neon-green-glow);
+        }
+
+        #meter-time .meter-bar {
+            background: var(--neon-orange);
+            box-shadow: 0 0 5px var(--neon-orange-glow);
+        }
+
+        /* Training Panel */
+        .dataset-control-panel {
+            margin-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-header h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .table-container {
+            max-height: 220px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        .table-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .table-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .table-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .dataset-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            text-align: left;
+        }
+
+        .dataset-table th, .dataset-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .dataset-table th {
+            background: rgba(0, 242, 254, 0.04);
+            color: var(--text-secondary);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        /* Labels */
+        .lbl {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .lbl-human {
+            background: rgba(57, 255, 20, 0.1);
+            color: var(--neon-green);
+            border: 1px solid rgba(57, 255, 20, 0.2);
+        }
+
+        .lbl-bot {
+            background: rgba(255, 0, 127, 0.1);
+            color: var(--neon-red);
+            border: 1px solid rgba(255, 0, 127, 0.2);
+        }
+
+        /* Scanning overlay */
+        .scanner-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(6, 8, 12, 0.95);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .scanner-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .scanner-content {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            max-width: 450px;
+        }
+
+        .scan-matrix {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 0 0 15px var(--neon-cyan-glow);
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(0, 242, 254, 0.03);
+        }
+
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+            box-shadow: 0 0 8px var(--neon-cyan);
+            animation: scan 2s infinite ease-in-out;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            50% { top: 98%; }
+            100% { top: 0%; }
+        }
+
+        .spinner-neon {
+            width: 45px;
+            height: 45px;
+            border: 3px solid transparent;
+            border-top-color: var(--neon-cyan);
+            border-bottom-color: var(--neon-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .scanner-content h2 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 8px var(--neon-cyan-glow);
+        }
+
+        .scanner-content p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .scan-metrics-feed {
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 6px;
+            color: var(--neon-green);
+            width: 100%;
+            min-height: 80px;
+            text-align: left;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            overflow: hidden;
+        }
+
+        /* Result View (replaces dashboard when active) */
+        .result-view {
+            max-width: 580px;
+            width: 100%;
+            margin: auto;
+            display: none;
+        }
+
+        .result-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .card-human { border-color: var(--neon-green); box-shadow: 0 10px 40px rgba(57, 255, 20, 0.15); }
+        .card-bot { border-color: var(--neon-red); box-shadow: 0 10px 40px rgba(255, 0, 127, 0.15); }
+
+        .shield-container {
+            position: relative;
+            width: 90px;
+            height: 90px;
+        }
+
+        .result-shield {
+            font-size: 5.5rem;
+        }
+
+        .shield-green { color: var(--neon-green); text-shadow: 0 0 25px var(--neon-green-glow); }
+        .shield-red { color: var(--neon-red); text-shadow: 0 0 25px var(--neon-red-glow); }
+
+        .check-overlay {
+            position: absolute;
+            top: 52%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.2rem;
+            font-weight: 900;
+        }
+
+        .icon-green { color: #071408; }
+        .icon-red { color: #1c000a; }
+
+        .result-text-area h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.9rem;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .orbit-glow-green { text-shadow: 0 0 12px var(--neon-green-glow); }
+        .orbit-glow-red { text-shadow: 0 0 12px var(--neon-red-glow); }
+
+        .badge-human { color: var(--neon-green); font-size: 1.1rem; }
+        .badge-bot { color: var(--neon-red); font-size: 1.1rem; }
+
+        .security-status-message {
+            margin-top: 15px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .text-green {
+            background: rgba(57, 255, 20, 0.08);
+            border: 1px solid rgba(57, 255, 20, 0.15);
+            color: var(--neon-green);
+        }
+
+        .text-red {
+            background: rgba(255, 0, 127, 0.08);
+            border: 1px solid rgba(255, 0, 127, 0.15);
+            color: var(--neon-red);
+        }
+
+        .telemetry-breakdown {
+            width: 100%;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+        }
+
+        .telemetry-breakdown h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breakdown-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.04);
+            padding-bottom: 6px;
+        }
+
+        .result-actions {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .result-actions .btn {
+            width: 100%;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(16, 22, 35, 0.95);
+            border: 1px solid var(--neon-cyan);
+            box-shadow: 0 8px 24px rgba(0, 242, 254, 0.15);
+            padding: 14px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            z-index: 1010;
+            transform: translateY(120px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .toast.active {
+            transform: translateY(0);
+        }
+
+        .toast i {
+            color: var(--neon-cyan);
+        }
+
+        .app-footer {
+            text-align: center;
+            padding: 15px 0;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.02);
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="cyber-background-grid"></div>
+
+    <!-- MAIN APP SCREEN -->
+    <div class="app-container" id="dashboard-screen">
+        <!-- Main Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <i class="fa-solid fa-shield-halved security-icon-glow"></i>
+                <div class="logo-text">
+                    <h1>ML-CAPTCHA</h1>
+                    <span class="sub-logo">CLIENT PREVIEW DEMO</span>
+                </div>
+            </div>
+            <div class="system-stats">
+                <div class="stat-badge">
+                    <span class="dot pulse-green"></span>
+                    <span class="badge-label">OFFLINE MODE</span>
+                </div>
+                <div class="stat-badge">
+                    <i class="fa-solid fa-circle-nodes"></i>
+                    <span class="badge-label">MODEL ACCURACY: <strong id="accuracy-value">96.5%</strong></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <main class="dashboard-grid">
+            <!-- Left Side: Interactive CAPTCHA -->
+            <section class="card security-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-user-lock"></i> Verification Challenge</h2>
+                    <span class="card-subtitle">Complete the challenge below to prove your humanity</span>
+                </div>
+                
+                <div class="card-body">
+                    <form id="captcha-form" onsubmit="return false;">
+                        <!-- CAPTCHA Display Area -->
+                        <div class="captcha-display-container">
+                            <div class="captcha-noise-bg"></div>
+                            <div class="captcha-text-display" id="captcha-code">CAPTCHA</div>
+                            <button type="button" class="refresh-captcha-btn" id="refresh-btn" title="Generate New CAPTCHA">
+                                <i class="fa-solid fa-arrows-rotate"></i>
+                            </button>
+                        </div>
+
+                        <!-- Mouse Tracking Sandbox (Canvas overlay) -->
+                        <div class="tracking-sandbox" id="tracking-zone">
+                            <canvas id="trail-canvas"></canvas>
+                            <div class="sandbox-overlay-text">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>Hover and move cursor inside this box to verify</span>
+                            </div>
+                        </div>
+
+                        <!-- Input field -->
+                        <div class="input-group">
+                            <label for="captcha-input">Enter CAPTCHA characters:</label>
+                            <input type="text" id="captcha-input" placeholder="Type letters here..." autocomplete="off" required>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-primary" id="btn-submit">
+                                <i class="fa-solid fa-fingerprint"></i> VERIFY IDENTITY
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="btn-simulate-bot">
+                                <i class="fa-solid fa-robot"></i> SIMULATE BOT
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Right Side: Live Telemetry Panel -->
+            <section class="card telemetry-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-gauge-high"></i> Telemetry Logs (Live)</h2>
+                    <span class="card-subtitle">Biometric signature metrics captured during interaction</span>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Telemetry Meters -->
+                    <div class="telemetry-grid">
+                        <div class="telemetry-meter" id="meter-length">
+                            <div class="meter-icon"><i class="fa-solid fa-text-width"></i></div>
+                            <div class="meter-info">
+                                <span class="meter-label">CAPTCHA Length</span>
+                                <span class="meter-value" id="val-length">0</span>
+                            </div>
+                            <div class="meter-bar-container">
+                                <div class="meter-bar" id="bar-length" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="telemetry-meter" id="meter-time">
+                            <div class="meter-icon"><i class="fa-regular fa-clock"></i></div>
+                            <div class="meter-info">
+                                <span class="meter-label">Solve Time (s)</span>
+                                <span class="meter-value" id="val-time">0.00s</span>
+                            </div>
+                            <div class="meter-bar-container">
+                                <div class="meter-bar" id="bar-time" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="telemetry-meter" id="meter-mouse">
+                            <div class="meter-icon"><i class="fa-solid fa-arrow-pointer"></i></div>
+                            <div class="meter-info">
+                                <span class="meter-label">Mouse Movements</span>
+                                <span class="meter-value" id="val-mouse">0</span>
+                            </div>
+                            <div class="meter-bar-container">
+                                <div class="meter-bar" id="bar-mouse" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dataset & training control -->
+                    <div class="dataset-control-panel">
+                        <div class="panel-header">
+                            <h3><i class="fa-solid fa-database"></i> Database Log (Current Session)</h3>
+                            <button type="button" class="btn btn-sm btn-accent" id="btn-clear-session">
+                                <i class="fa-solid fa-trash-can"></i> Clear Table
+                            </button>
+                        </div>
+                        
+                        <div class="table-container">
+                            <table class="dataset-table" id="records-table">
+                                <thead>
+                                    <tr>
+                                        <th>Length</th>
+                                        <th>Time (s)</th>
+                                        <th>Mouse Moves</th>
+                                        <th>Result</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-body">
+                                    <!-- Seed records -->
+                                    <tr><td>5</td><td>6.00</td><td>32</td><td><span class="lbl lbl-human">Human</span></td></tr>
+                                    <tr><td>6</td><td>8.00</td><td>41</td><td><span class="lbl lbl-human">Human</span></td></tr>
+                                    <tr><td>5</td><td>1.00</td><td>2</td><td><span class="lbl lbl-bot">Bot</span></td></tr>
+                                    <tr><td>6</td><td>2.00</td><td>4</td><td><span class="lbl lbl-bot">Bot</span></td></tr>
+                                    <tr><td>5</td><td>7.00</td><td>30</td><td><span class="lbl lbl-human">Human</span></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="app-footer">
+            <p>&copy; 2026 AI/ML Cybersecurity Project &bull; Static Browser Demo Preview</p>
+        </footer>
+    </div>
+
+    <!-- RESULT VIEW SCREEN -->
+    <div class="result-view" id="result-screen">
+        <div class="result-card" id="result-card-element">
+            <div class="shield-container">
+                <i class="fa-solid fa-shield-halved result-shield" id="result-shield-icon"></i>
+                <i class="fa-solid check-overlay" id="result-overlay-icon"></i>
+            </div>
+            
+            <div class="result-text-area">
+                <h1 id="result-title">VERIFICATION PASSED</h1>
+                <p class="result-verdict">The Decision Tree model classified your behavior as: <strong id="result-badge">HUMAN</strong></p>
+                <div class="security-status-message" id="result-message">
+                    <i class="fa-solid fa-lock-open"></i> System access clearance granted.
+                </div>
+            </div>
+
+            <!-- Telemetry Parameters Analyzed -->
+            <div class="telemetry-breakdown">
+                <h3><i class="fa-solid fa-chart-simple"></i> Telemetry Parameters Analyzed</h3>
+                <div class="breakdown-grid">
+                    <div class="breakdown-item">
+                        <span class="lbl-light">CAPTCHA Length</span>
+                        <strong class="val-light" id="res-val-length">6 characters</strong>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="lbl-light">Total Solve Time</span>
+                        <strong class="val-light" id="res-val-time">5.20s</strong>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="lbl-light">Mouse Movement Events</span>
+                        <strong class="val-light" id="res-val-mouse">32 count</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back Button -->
+            <div class="result-actions">
+                <button type="button" class="btn btn-primary" id="btn-back">
+                    <i class="fa-solid fa-chevron-left"></i> BACK TO CHALLENGE
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scanning Overlay -->
+    <div class="scanner-overlay" id="scanning-screen">
+        <div class="scanner-content">
+            <div class="scan-matrix">
+                <div class="scan-line"></div>
+            </div>
+            <div class="spinner-neon"></div>
+            <h2>ANALYZING BIOMETRIC TELEMETRY...</h2>
+            <p>Classifier: Client-Side Simulated DecisionTree</p>
+            <div class="scan-metrics-feed" id="scan-metrics-feed"></div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast" id="system-toast">
+        <i class="fa-solid fa-circle-info"></i>
+        <span id="toast-message">Verification complete</span>
+    </div>
+
+    <!-- Client JS Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // CAPTCHA State Variables
+            let currentCaptcha = "";
+            let mouseMoveCount = 0;
+            let startTime = null;
+            let timerInterval = null;
+            let isTrackingActive = true;
+            let lastMouseX = null;
+            let lastMouseY = null;
+            
+            // Session Dataset Records Array
+            const sessionRecords = [
+                { length: 5, time: 6.00, mouse: 32, result: 1 },
+                { length: 6, time: 8.00, mouse: 41, result: 1 },
+                { length: 5, time: 1.00, mouse: 2,  result: 0 },
+                { length: 6, time: 2.00, mouse: 4,  result: 0 },
+                { length: 5, time: 7.00, mouse: 30, result: 1 }
+            ];
+
+            // DOM Elements
+            const captchaCodeEl = document.getElementById('captcha-code');
+            const refreshBtn = document.getElementById('refresh-btn');
+            const captchaInput = document.getElementById('captcha-input');
+            const trackingZone = document.getElementById('tracking-zone');
+            const trailCanvas = document.getElementById('trail-canvas');
+            const btnSubmit = document.getElementById('btn-submit');
+            const btnSimulateBot = document.getElementById('btn-simulate-bot');
+            const btnClearSession = document.getElementById('btn-clear-session');
+            const tableBody = document.getElementById('table-body');
+            
+            const dashboardScreen = document.getElementById('dashboard-screen');
+            const resultScreen = document.getElementById('result-screen');
+            const btnBack = document.getElementById('btn-back');
+
+            // Telemetry display elements
+            const valLength = document.getElementById('val-length');
+            const valTime = document.getElementById('val-time');
+            const valMouse = document.getElementById('val-mouse');
+            const barLength = document.getElementById('bar-length');
+            const barTime = document.getElementById('bar-time');
+            const barMouse = document.getElementById('bar-mouse');
+
+            // Result Screen Elements
+            const resultCardElement = document.getElementById('result-card-element');
+            const resultShieldIcon = document.getElementById('result-shield-icon');
+            const resultOverlayIcon = document.getElementById('result-overlay-icon');
+            const resultTitle = document.getElementById('result-title');
+            const resultBadge = document.getElementById('result-badge');
+            const resultMessage = document.getElementById('result-message');
+            const resValLength = document.getElementById('res-val-length');
+            const resValTime = document.getElementById('res-val-time');
+            const resValMouse = document.getElementById('res-val-mouse');
+
+            // Scanning screen and toast
+            const scanningScreen = document.getElementById('scanning-screen');
+            const scanMetricsFeed = document.getElementById('scan-metrics-feed');
+            const systemToast = document.getElementById('system-toast');
+            const toastMessage = document.getElementById('toast-message');
+
+            // Canvas Setup
+            const ctx = trailCanvas.getContext('2d');
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            function resizeCanvas() {
+                const rect = trackingZone.getBoundingClientRect();
+                trailCanvas.width = rect.width;
+                trailCanvas.height = rect.height;
+            }
+
+            // Generate CAPTCHA
+            function generateCaptcha() {
+                const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+                const length = Math.floor(Math.random() * 3) + 5; // 5 to 7 characters
+                let result = '';
+                for (let i = 0; i < length; i++) {
+                    result += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                currentCaptcha = result;
+                captchaCodeEl.textContent = result;
+                
+                resetTelemetry(length);
+            }
+
+            // Reset Telemetry Metrics
+            function resetTelemetry(length) {
+                mouseMoveCount = 0;
+                lastMouseX = null;
+                lastMouseY = null;
+                isTrackingActive = true;
+                
+                ctx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+                startTime = Date.now();
+                
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = setInterval(updateTimeTelemetry, 50);
+
+                valLength.textContent = length;
+                barLength.style.width = `${(length / 8) * 100}%`;
+                
+                updateMouseTelemetryDisplay();
+                updateTimeTelemetry();
+            }
+
+            // Update Time
+            function updateTimeTelemetry() {
+                if (!startTime || !isTrackingActive) return;
+                const elapsed = (Date.now() - startTime) / 1000;
+                valTime.textContent = `${elapsed.toFixed(2)}s`;
+                const barWidth = Math.min((elapsed / 15) * 100, 100);
+                barTime.style.width = `${barWidth}%`;
+            }
+
+            // Track Mouse Movements in Sandbox
+            trackingZone.addEventListener('mousemove', (e) => {
+                if (!isTrackingActive) return;
+
+                const rect = trackingZone.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                mouseMoveCount++;
+                updateMouseTelemetryDisplay();
+
+                if (lastMouseX !== null && lastMouseY !== null) {
+                    ctx.beginPath();
+                    ctx.moveTo(lastMouseX, lastMouseY);
+                    ctx.lineTo(x, y);
+                    ctx.strokeStyle = '#00f2fe';
+                    ctx.lineWidth = 3;
+                    ctx.lineCap = 'round';
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = 'rgba(0, 242, 254, 0.8)';
+                    ctx.stroke();
+                }
+
+                lastMouseX = x;
+                lastMouseY = y;
+            });
+
+            // Fading effect for mouse trail canvas
+            setInterval(() => {
+                if (!isTrackingActive) return;
+                ctx.fillStyle = 'rgba(10, 13, 20, 0.08)';
+                ctx.fillRect(0, 0, trailCanvas.width, trailCanvas.height);
+            }, 50);
+
+            function updateMouseTelemetryDisplay() {
+                valMouse.textContent = mouseMoveCount;
+                const barWidth = Math.min((mouseMoveCount / 100) * 100, 100);
+                barMouse.style.width = `${barWidth}%`;
+            }
+
+            // Toast show helper
+            function showToast(message) {
+                toastMessage.textContent = message;
+                systemToast.classList.add('active');
+                setTimeout(() => {
+                    systemToast.classList.remove('active');
+                }, 3000);
+            }
+
+            // Simulated Decision Tree prediction rules
+            // Trained Rules logic:
+            // IF Solve Time < 1.8 seconds OR Mouse movements < 10 events THEN classification = BOT
+            // ELSE classification = HUMAN
+            function predictBehavior(length, time, mouse) {
+                if (time < 1.8 || mouse < 10) {
+                    return "Bot";
+                }
+                return "Human";
+            }
+
+            // Update session dataset table
+            function updateTable() {
+                tableBody.innerHTML = "";
+                sessionRecords.slice(-10).forEach(r => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${r.length}</td>
+                        <td>${r.time.toFixed(2)}</td>
+                        <td>${r.mouse}</td>
+                        <td>
+                            ${r.result === 1 ? '<span class="lbl lbl-human">Human</span>' : '<span class="lbl lbl-bot">Bot</span>'}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            // Show result screen
+            function displayResult(result, length, time, mouse) {
+                // Set text fields
+                resValLength.textContent = `${length} characters`;
+                resValTime.textContent = `${time.toFixed(2)}s`;
+                resValMouse.textContent = `${mouse} count`;
+
+                // Clear styling classes
+                resultCardElement.className = "result-card";
+                resultShieldIcon.className = "fa-solid fa-shield-halved result-shield";
+                resultOverlayIcon.className = "fa-solid check-overlay";
+                resultMessage.className = "security-status-message";
+
+                if (result === "Human") {
+                    resultCardElement.classList.add('card-human');
+                    resultShieldIcon.classList.add('shield-green');
+                    resultOverlayIcon.classList.add('fa-check', 'icon-green');
+                    resultTitle.textContent = "VERIFICATION PASSED";
+                    resultTitle.className = "orbit-glow-green";
+                    resultBadge.textContent = "HUMAN";
+                    resultBadge.className = "badge-human";
+                    resultMessage.classList.add('text-green');
+                    resultMessage.innerHTML = '<i class="fa-solid fa-lock-open"></i> System access clearance granted.';
+                } else {
+                    resultCardElement.classList.add('card-bot');
+                    resultShieldIcon.classList.add('shield-red');
+                    resultOverlayIcon.classList.add('fa-xmark', 'icon-red');
+                    resultTitle.textContent = "VERIFICATION FAILED";
+                    resultTitle.className = "orbit-glow-red";
+                    resultBadge.textContent = "BOT / AUTOMATED THREAT";
+                    resultBadge.className = "badge-bot";
+                    resultMessage.classList.add('text-red');
+                    resultMessage.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Security blockage triggered.';
+                }
+
+                dashboardScreen.style.display = "none";
+                resultScreen.style.display = "block";
+            }
+
+            // Submit Form (Human flow)
+            btnSubmit.addEventListener('click', async () => {
+                const userTyped = captchaInput.value.trim();
+                if (userTyped.toLowerCase() !== currentCaptcha.toLowerCase()) {
+                    showToast("Invalid CAPTCHA code. Please try again.");
+                    generateCaptcha();
+                    captchaInput.value = "";
+                    return;
+                }
+
+                isTrackingActive = false;
+                clearInterval(timerInterval);
+
+                const length = currentCaptcha.length;
+                const timeTaken = (Date.now() - startTime) / 1000;
+                const mouseMoves = mouseMoveCount;
+
+                // Run prediction locally
+                const prediction = predictBehavior(length, timeTaken, mouseMoves);
+                
+                // Add to records list
+                sessionRecords.push({
+                    length: length,
+                    time: timeTaken,
+                    mouse: mouseMoves,
+                    result: prediction === "Human" ? 1 : 0
+                });
+                updateTable();
+
+                // Show scanning animation
+                await runScanningOverlay(length, timeTaken, mouseMoves, prediction === "Bot");
+
+                // Render result view
+                displayResult(prediction, length, timeTaken, mouseMoves);
+            });
+
+            // Bot Simulation Flow
+            btnSimulateBot.addEventListener('click', async () => {
+                isTrackingActive = false;
+                clearInterval(timerInterval);
+
+                captchaInput.value = currentCaptcha;
+
+                const length = currentCaptcha.length;
+                const timeTaken = parseFloat((Math.random() * 0.3 + 0.1).toFixed(2)); // ultra fast 0.1s - 0.4s
+                const mouseMoves = 0; // zero movement events
+
+                // Draw straight robotic line
+                ctx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+                ctx.beginPath();
+                ctx.moveTo(20, trailCanvas.height / 2);
+                ctx.lineTo(trailCanvas.width - 20, trailCanvas.height / 2);
+                ctx.strokeStyle = '#ff007f';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                valTime.textContent = `${timeTaken}s`;
+                barTime.style.width = `${(timeTaken / 15) * 100}%`;
+                valMouse.textContent = mouseMoves;
+                barMouse.style.width = '0%';
+
+                const prediction = "Bot";
+                sessionRecords.push({
+                    length: length,
+                    time: timeTaken,
+                    mouse: mouseMoves,
+                    result: 0
+                });
+                updateTable();
+
+                await runScanningOverlay(length, timeTaken, mouseMoves, true);
+
+                displayResult(prediction, length, timeTaken, mouseMoves);
+            });
+
+            // Clear Session
+            btnClearSession.addEventListener('click', () => {
+                sessionRecords.length = 0;
+                updateTable();
+                showToast("Session logs cleared.");
+            });
+
+            // Back from result screen
+            btnBack.addEventListener('click', () => {
+                resultScreen.style.display = "none";
+                dashboardScreen.style.display = "flex";
+                captchaInput.value = "";
+                generateCaptcha();
+            });
+
+            // Scanning screen animation
+            function runScanningOverlay(length, time, mouse, isBot = false) {
+                return new Promise((resolve) => {
+                    scanningScreen.classList.add('active');
+                    scanMetricsFeed.innerHTML = "";
+                    const logs = [
+                        `[SYSTEM] Connecting to local prediction engine...`,
+                        `[TELEMETRY] Captcha characters length: ${length}`,
+                        `[TELEMETRY] Solve execution time: ${time.toFixed(2)}s`,
+                        `[TELEMETRY] Mouse movements registered: ${mouse} coordinates`,
+                        `[MODEL] Executing local.DecisionTreeRules.predict()`,
+                        isBot ? `[SECURITY] FATAL: Non-human activity detected. Threat Blocked.` : `[SECURITY] Success: Telemetry profile matches human signature.`
+                    ];
+
+                    let index = 0;
+                    const logInterval = setInterval(() => {
+                        if (index < logs.length) {
+                            const line = document.createElement('div');
+                            line.textContent = logs[index];
+                            if (logs[index].includes('FATAL') || logs[index].includes('SECURITY')) {
+                                line.style.color = isBot ? '#ff007f' : '#39ff14';
+                            }
+                            scanMetricsFeed.appendChild(line);
+                            scanMetricsFeed.scrollTop = scanMetricsFeed.scrollHeight;
+                            index++;
+                        } else {
+                            clearInterval(logInterval);
+                            setTimeout(() => {
+                                scanningScreen.classList.remove('active');
+                                resolve();
+                            }, 500);
+                        }
+                    }, 250);
+                });
+            }
+
+            // Initialize app
+            generateCaptcha();
+            updateTable();
+
+            // Refresh captcha trigger
+            refreshBtn.addEventListener('click', generateCaptcha);
+
+            // Update text length gauge as user types
+            captchaInput.addEventListener('input', () => {
+                const inputLen = captchaInput.value.length;
+                valLength.textContent = inputLen;
+                barLength.style.width = `${Math.min((inputLen / 8) * 100, 100)}%`;
+            });
+        });
+    </script>
+</body>
+</html>
