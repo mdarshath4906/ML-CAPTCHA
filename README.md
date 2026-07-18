@@ -1,25 +1,20 @@
-# ML-CAPTCHA
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
+</div>
 
-A Machine Learning-based CAPTCHA Recognition project developed using Python and Flask.
+# Run and deploy your AI Studio app
 
-## Features
-- CAPTCHA prediction
-- Machine Learning model
-- Flask web application
-- Responsive web interface
+This contains everything you need to run your app locally.
 
-## Technologies Used
-- Python
-- Flask
-- Scikit-learn
-- HTML
-- CSS
-- JavaScript
+View your app in AI Studio: https://ai.studio/apps/9f1401aa-7c57-4e08-bff0-265bc5f98629
 
-## How to Run
+## Run Locally
 
-```bash
-pip install -r requirements.txt
-python train_model.py
-python app.py
-```
+**Prerequisites:**  Node.js
+
+
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`

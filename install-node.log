@@ -1,0 +1,4 @@
+﻿START 07/17/2026 16:29:07
+CMD EXISTS: C:\Windows\System32\cmd.exe
+WINGET EXISTS: C:\Users\femin\AppData\Local\Microsoft\WindowsApps\winget.exe
+WINGET ERROR: A parameter cannot be found that matches parameter name 'Encoding'.

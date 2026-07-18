@@ -1,0 +1,6 @@
+{
+  "name": "AI CAPTCHA Lab",
+  "description": "An interactive, frontend-only machine learning CAPTCHA security lab. Features real-time behavioral mouse-tracking classifiers, interactive drawing shape neural networks, and customizable anti-bot threshold configurations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
